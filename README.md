@@ -13,7 +13,7 @@ DelivrEase is an intelligent delivery workforce management system designed to op
 ## Tech Stack
 - PHP
 - MySQL
-- HTML/JavaScript
+- HTML/JavaScript/CSS
 - XAMPP
 
 ## Installation
