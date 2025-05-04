@@ -1,0 +1,28 @@
+# XAMPP specific
+/xampp/
+*.log
+
+# Database credentials
+config.php
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# PHP specific
+vendor/
+*.cache
+
+# Sensitive information
+*.env
+.git/
+.vscode/
+.idea/
+
+# Backup files
+*.bak
+*.swp
+
+# Temporary files
+tmp/
+temp/
