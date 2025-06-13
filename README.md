@@ -23,22 +23,6 @@ DelivrEase is designed for:
 
 ---
 
-## 🔹 Value Proposition
-
-DelivrEase offers a **comprehensive, intelligent, and scalable solution** that addresses critical inefficiencies in delivery operations. Its key differentiators include:
-
-| Feature                                   | Strategic Value                                                                                     |
-| ----------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| ✅ **Automated Assignment Engine**         | Matches delivery personnel to tasks based on zone, workload, and availability.                      |
-| 🔄 **Real-Time Status Tracking**          | Enables instant visibility into worker availability and ongoing deliveries.                         |
-| 🗺️ **Zone-Based Filtering & Assignment** | Minimizes overlap, ensures geo-efficient task allocation.                                           |
-| 📊 **Performance Analytics Dashboard**    | Tracks individual metrics to inform performance reviews and optimize workforce planning.            |
-| ⚡ **AJAX-Based Dynamic Refresh**          | Ensures seamless data updates without full-page reloads.                                            |
-| 🔐 **Secure Admin Interface**             | Centralized control with authentication and role-based access.                                      |
-| 📈 **Future-Ready Architecture**          | Built to accommodate future modules like predictive analytics, gamification, or mobile integration. |
-
----
-
 ## 🔹 Why It Matters
 
 In the current delivery ecosystem, businesses often struggle with:
