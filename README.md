@@ -2,8 +2,6 @@
 
 ## Project Overview
 DelivrEase is an intelligent delivery workforce management system designed to optimize delivery operations, track worker performance, and streamline workforce allocation.
-Certainly — here's a **professional version** that retains the clarity and strategic intent, suitable for your project report, README, pitch deck, or investor brief:
-
 ---
 
 ## 🔹 Project Purpose
