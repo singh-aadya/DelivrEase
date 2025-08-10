@@ -1,0 +1,21 @@
+-- Use the database
+USE delivery_workforce_system;
+
+-- Create feedback table
+CREATE TABLE feedback (
+    feedback_id INT PRIMARY KEY AUTO_INCREMENT,
+    customer_id INT,
+    delivery_id INT,
+    rating FLOAT,
+    comments TEXT,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
+    FOREIGN KEY (delivery_id) REFERENCES deliveries(delivery_id)
+);
+
+-- Show all tables
+SHOW TABLES;
+
+-- Describe the structure of feedback table
+DESCRIBE feedback;
