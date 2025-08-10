@@ -1,0 +1,21 @@
+-- Use the database
+USE delivery_workforce_system;
+
+-- Create notifications table
+CREATE TABLE notifications (
+    notification_id INT PRIMARY KEY AUTO_INCREMENT,
+    employee_id INT,
+    customer_id INT,
+    message TEXT NOT NULL,
+    status VARCHAR(20),
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    FOREIGN KEY (employee_id) REFERENCES employees(employee_id),
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+);
+
+-- Show all tables
+SHOW TABLES;
+
+-- Describe the structure of notifications table
+DESCRIBE notifications;
