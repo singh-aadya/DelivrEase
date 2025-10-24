@@ -34,8 +34,6 @@ DelivrEase directly addresses these issues by **transforming static tracking int
 
 ---
 
-Would you like a 1-line **elevator pitch** or a formal **mission & vision** statement for DelivrEase next?
-
 ### Key Features
 - Smart worker allocation
 - Zone-based routing
@@ -75,3 +73,4 @@ Run schema.sql to create the necessary tables and relationships.
 ## License
 Distributed under the MIT License.
 "# DelivrEase" 
+
