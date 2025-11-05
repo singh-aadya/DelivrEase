@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-2xl font-extrabold mb-4">Request Leave</h1>
+<form method="post" class="grid md:grid-cols-3 gap-4">
+  <div><label class="text-sm">From</label><input type="date" name="date_from" class="w-full mt-1 px-3 py-2 rounded-xl bg-black/30 border border-white/10" required></div>
+  <div><label class="text-sm">To</label><input type="date" name="date_to" class="w-full mt-1 px-3 py-2 rounded-xl bg-black/30 border border-white/10" required></div>
+  <div class="md:col-span-3"><label class="text-sm">Reason</label><input name="reason" class="w-full mt-1 px-3 py-2 rounded-xl bg-black/30 border border-white/10" placeholder="Optional"></div>
+  <button class="px-4 py-2 rounded-xl bg-cyan-400 text-slate-900 font-bold">Submit</button>
+</form>
+{% endblock %}

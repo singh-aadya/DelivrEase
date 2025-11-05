@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="py-16 text-center">
+  <h1 class="text-5xl font-extrabold tracking-tight">Delivrease</h1>
+  <p class="mt-3 text-lg text-slate-300">Delivering ease. One drop at a time.</p>
+  <div class="mt-6 flex gap-3 justify-center">
+    <a href="{{ url_for('auth.login') }}" class="px-5 py-3 rounded-xl bg-cyan-400 text-slate-900 font-bold hover:opacity-90">Get Started</a>
+    <a href="#features" class="px-5 py-3 rounded-xl border border-white/10 hover:bg-white/10">See Features</a>
+  </div>
+</section>
+<section id="features" class="grid md:grid-cols-3 gap-4">
+  <div class="p-5 rounded-2xl bg-white/5 border border-white/10"><h3 class="font-bold text-lg mb-1">Smart Assignment</h3><p class="text-slate-300">Order assignment by <b>fatigue</b> + <b>distance</b> score.</p></div>
+  <div class="p-5 rounded-2xl bg-white/5 border border-white/10"><h3 class="font-bold text-lg mb-1">Admin Control</h3><p class="text-slate-300">Track agents, manage leaves, oversee deliveries.</p></div>
+  <div class="p-5 rounded-2xl bg-white/5 border border-white/10"><h3 class="font-bold text-lg mb-1">Agent Tools</h3><p class="text-slate-300">Dashboard, delivery history, analytics, leave requests.</p></div>
+</section>
+{% endblock %}

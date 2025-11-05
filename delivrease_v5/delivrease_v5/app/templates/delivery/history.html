@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-2xl font-extrabold mb-4">Your History</h1>
+<div class="grid md:grid-cols-2 gap-4">
+  <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+    <h3 class="font-bold mb-2">Deliveries</h3>
+    <div class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead class="bg-white/10"><tr><th class="p-3">Order</th><th class="p-3">From</th><th class="p-3">To</th><th class="p-3">Distance</th><th class="p-3">Status</th><th class="p-3">Date</th></tr></thead>
+        <tbody>
+          {% for o in orders %}
+            <tr class="border-b border-white/10">
+              <td class="p-3">{{ o.title }}</td>
+              <td class="p-3">{{ o.pickup }}</td>
+              <td class="p-3">{{ o.dropoff }}</td>
+              <td class="p-3">{{ '%.1f'|format(o.distance_km) }} km</td>
+              <td class="p-3">{{ o.status }}</td>
+              <td class="p-3">{{ o.created_at.date() }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+    <h3 class="font-bold mb-2">Leave Requests</h3>
+    <div class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead class="bg-white/10"><tr><th class="p-3">From</th><th class="p-3">To</th><th class="p-3">Reason</th><th class="p-3">Status</th><th class="p-3">Requested</th></tr></thead>
+        <tbody>
+          {% for r in leaves %}
+            <tr class="border-b border-white/10">
+              <td class="p-3">{{ r.date_from }}</td>
+              <td class="p-3">{{ r.date_to }}</td>
+              <td class="p-3">{{ r.reason }}</td>
+              <td class="p-3">{{ r.status }}</td>
+              <td class="p-3">{{ r.created_at.date() }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
