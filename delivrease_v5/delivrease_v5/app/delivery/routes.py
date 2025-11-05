@@ -53,7 +53,40 @@ def mark_delivered(order_id):
 #         return redirect(url_for("delivery.leave"))
 #     return render_template("delivery/leave.html")
 
-from datetime import datetime
+# from datetime import datetime
+# from flask import flash, redirect, render_template, request, url_for, session
+# from app.models import LeaveRequest, db
+
+# @delivery_bp.route("/leave", methods=["GET", "POST"])
+# @require_agent
+# def leave():
+#     if request.method == "POST":
+#         uid = session["user_id"]
+#         date_from = request.form["date_from"]
+#         date_to = request.form["date_to"]
+#         reason = request.form["reason"].strip() or None
+
+#         try:
+#             start = datetime.strptime(date_from, "%Y-%m-%d").date()
+#             end = datetime.strptime(date_to, "%Y-%m-%d").date()
+
+#             # Validation check — end must be after or same as start
+#             if end < start:
+#                 flash("Invalid date range. 'To' date cannot be earlier than 'From' date.", "danger")
+#                 return redirect(url_for("delivery.leave"))
+#         except ValueError:
+#             flash("Invalid date format.", "danger")
+#             return redirect(url_for("delivery.leave"))
+
+#         leave = LeaveRequest(user_id=uid, date_from=start, date_to=end, reason=reason, status="pending")
+#         db.session.add(leave)
+#         db.session.commit()
+#         flash("Leave request submitted successfully.", "success")
+#         return redirect(url_for("delivery.dashboard"))
+
+#     return render_template("delivery/leave.html")
+
+from datetime import datetime, date
 from flask import flash, redirect, render_template, request, url_for, session
 from app.models import LeaveRequest, db
 
@@ -69,11 +102,18 @@ def leave():
         try:
             start = datetime.strptime(date_from, "%Y-%m-%d").date()
             end = datetime.strptime(date_to, "%Y-%m-%d").date()
+            today = date.today()
 
-            # Validation check — end must be after or same as start
+            # ✅ Validation 1: Cannot apply for leave in the past
+            if start < today:
+                flash("You cannot apply for leave starting in the past.", "danger")
+                return redirect(url_for("delivery.leave"))
+
+            # ✅ Validation 2: 'To' date must not be earlier than 'From' date
             if end < start:
                 flash("Invalid date range. 'To' date cannot be earlier than 'From' date.", "danger")
                 return redirect(url_for("delivery.leave"))
+
         except ValueError:
             flash("Invalid date format.", "danger")
             return redirect(url_for("delivery.leave"))
@@ -85,6 +125,7 @@ def leave():
         return redirect(url_for("delivery.dashboard"))
 
     return render_template("delivery/leave.html")
+
 
 
 @delivery_bp.route("/history")
