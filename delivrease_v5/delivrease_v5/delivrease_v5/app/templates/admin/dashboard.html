@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-2xl font-extrabold mb-4">Admin Dashboard</h1>
+<div class="flex gap-2 mb-4 flex-wrap">
+  <a class="px-3 py-2 rounded-lg bg-emerald-400 text-slate-900" href="{{ url_for('admin.new_order') }}">+ New Order</a>
+  <a class="px-3 py-2 rounded-lg border border-white/10" href="{{ url_for('admin.assign') }}">Assign</a>
+  <a class="px-3 py-2 rounded-lg border border-white/10" href="{{ url_for('admin.leaves') }}">Leaves</a>
+ 
+  
+</div>
+
+<form method="get" class="grid md:grid-cols-3 gap-3 mb-4">
+  <div>
+    <label class="text-sm">Search Title</label>
+    <input name="q" value="{{ request.args.get('q','') }}" class="w-full mt-1 px-3 py-2 rounded-xl bg-black/30 border border-white/10" placeholder="Order #">
+  </div>
+  <div>
+    <label class="text-sm">Status</label>
+    <select name="status" class="w-full mt-1 px-3 py-2 rounded-xl bg-black/30 border border-white/10">
+      {% set s = request.args.get('status','') %}
+      <option value="">All</option>
+      <option value="pending" {{ 'selected' if s=='pending' else '' }}>Pending</option>
+      <option value="assigned" {{ 'selected' if s=='assigned' else '' }}>Assigned</option>
+      <option value="delivered" {{ 'selected' if s=='delivered' else '' }}>Delivered</option>
+    </select>
+  </div>
+  <div class="flex items-end">
+    <button class="px-4 py-2 rounded-xl bg-white/10 border border-white/10">Apply</button>
+  </div>
+</form>
+
+<h2 class="font-bold mb-2">Orders</h2>
+<div class="overflow-x-auto rounded-xl border border-white/10">
+<table class="min-w-full">
+  <thead class="bg-white/10"><tr><th class="p-3">Order</th><th class="p-3">From</th><th class="p-3">To</th><th class="p-3">Dist</th><th class="p-3">Status</th><th class="p-3">Agent</th><th class="p-3">Actions</th></tr></thead>
+  <tbody>
+  {% for o in orders %}
+    <tr class="border-b border-white/10">
+      <td class="p-3">{{ o.title }}</td>
+      <td class="p-3">{{ o.pickup }}</td>
+      <td class="p-3">{{ o.dropoff }}</td>
+      <td class="p-3">{{ '%.1f'|format(o.distance_km) }} km</td>
+      <td class="p-3">{{ o.status }}</td>
+      <td class="p-3">{{ o.agent.username if o.agent else '-' }}</td>
+      <td class="p-3 flex gap-2">
+        <a class="px-3 py-1 rounded-lg bg-cyan-400 text-slate-900" href="{{ url_for('admin.assign', order_id=o.id) }}">Assign</a>
+        <form method="post" action="{{ url_for('admin.set_status', order_id=o.id) }}">
+          <input type="hidden" name="status" value="delivered">
+          <button class="px-3 py-1 rounded-lg bg-emerald-400 text-slate-900" {% if o.status=='delivered' %}disabled{% endif %}>Mark Delivered</button>
+        </form>
+        <form method="post" action="{{ url_for('admin.set_status', order_id=o.id) }}">
+          <input type="hidden" name="status" value="pending">
+          <button class="px-3 py-1 rounded-lg bg-amber-400 text-slate-900">Reset Pending</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<h2 class="font-bold mt-8 mb-2 text-lg">Agent Fatigue Overview</h2>
+<div class="overflow-x-auto rounded-xl border border-white/10">
+  <table class="min-w-full">
+    <thead class="bg-white/10">
+      <tr>
+        <th class="p-3 text-left">Agent</th>
+        <th class="p-3 text-left">Current Fatigue</th>
+        <th class="p-3 text-left">Active Orders</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in data %}
+      <tr class="border-b border-white/10">
+        <td class="p-3 font-medium">{{ a.username }}</td>
+        <td class="p-3">
+          <span class="px-2 py-1 rounded-lg text-xs 
+            {% if a.fatigue < 3 %} bg-emerald-500/20 text-emerald-300
+            {% elif a.fatigue < 6 %} bg-amber-500/20 text-amber-300
+            {% else %} bg-rose-500/20 text-rose-300 {% endif %}">
+            {{ a.fatigue }}
+          </span>
+        </td>
+        <td class="p-3">{{ a.assigned }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
