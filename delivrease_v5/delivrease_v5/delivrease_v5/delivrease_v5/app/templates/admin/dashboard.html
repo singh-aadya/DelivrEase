@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="min-h-screen bg-gradient-to-b from-indigo-950 via-purple-900 to-indigo-950 text-white p-8">
+
+  <!-- HEADER -->
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-extrabold tracking-wide">📊 DelivrEase Admin Dashboard</h1>
+    <div class="flex gap-3">
+      <a href="{{ url_for('admin.new_order') }}" class="px-4 py-2 bg-cyan-400 text-slate-900 font-semibold rounded-xl hover:opacity-90 transition">+ New Order</a>
+      <a href="{{ url_for('auth.logout') }}" class="px-4 py-2 bg-rose-500 text-white font-semibold rounded-xl hover:bg-rose-600 transition">Logout</a>
+    </div>
+  </div>
+
+  <!-- KPI SUMMARY -->
+  <div class="grid md:grid-cols-4 gap-6 mb-10">
+    <div class="bg-gradient-to-br from-cyan-500/20 to-cyan-800/30 border border-cyan-400/20 p-6 rounded-2xl text-center shadow-lg shadow-cyan-900/20">
+      <p class="text-sm text-gray-300 uppercase tracking-wide">Active Orders</p>
+      <p class="text-4xl font-bold text-cyan-400 mt-1">{{ active_orders }}</p>
+    </div>
+    <div class="bg-gradient-to-br from-amber-500/20 to-amber-800/30 border border-amber-400/20 p-6 rounded-2xl text-center shadow-lg shadow-amber-900/20">
+      <p class="text-sm text-gray-300 uppercase tracking-wide">Pending Leaves</p>
+      <p class="text-4xl font-bold text-amber-400 mt-1">{{ pending_leaves }}</p>
+    </div>
+    <div class="bg-gradient-to-br from-emerald-500/20 to-emerald-800/30 border border-emerald-400/20 p-6 rounded-2xl text-center shadow-lg shadow-emerald-900/20">
+      <p class="text-sm text-gray-300 uppercase tracking-wide">Total Agents</p>
+      <p class="text-4xl font-bold text-emerald-400 mt-1">{{ total_agents }}</p>
+    </div>
+    <div class="bg-gradient-to-br from-pink-500/20 to-pink-800/30 border border-pink-400/20 p-6 rounded-2xl text-center shadow-lg shadow-pink-900/20">
+      <p class="text-sm text-gray-300 uppercase tracking-wide">Avg Fatigue</p>
+      <p class="text-4xl font-bold text-pink-400 mt-1">{{ avg_fatigue }}</p>
+    </div>
+  </div>
+
+  <!-- FILTERS + ACTIONS -->
+  <div class="flex flex-wrap gap-3 mb-8">
+    <a href="{{ url_for('admin.assign') }}" class="px-4 py-2 bg-emerald-400 text-slate-900 rounded-xl font-semibold hover:opacity-90 transition">Assign</a>
+    <a href="{{ url_for('admin.leaves') }}" class="px-4 py-2 border border-white/10 rounded-xl hover:bg-white/10 transition">Manage Leaves</a>
+    <form method="get" class="flex gap-3 flex-wrap items-end">
+      <div>
+        <label class="text-sm text-gray-300">Search Title</label>
+        <input name="q" value="{{ request.args.get('q','') }}" class="w-44 px-3 py-2 rounded-xl bg-black/30 border border-white/10" placeholder="Order #">
+      </div>
+      <div>
+        <label class="text-sm text-gray-300">Status</label>
+        <select name="status" class="w-40 px-3 py-2 rounded-xl bg-black/30 border border-white/10">
+          {% set s = request.args.get('status','') %}
+          <option value="">All</option>
+          <option value="pending" {{ 'selected' if s=='pending' else '' }}>Pending</option>
+          <option value="assigned" {{ 'selected' if s=='assigned' else '' }}>Assigned</option>
+          <option value="delivered" {{ 'selected' if s=='delivered' else '' }}>Delivered</option>
+        </select>
+      </div>
+      <button class="px-4 py-2 bg-cyan-400 text-slate-900 rounded-xl font-semibold hover:opacity-90 transition">Apply</button>
+    </form>
+  </div>
+
+  <!-- MAIN SECTION -->
+  <div class="grid md:grid-cols-2 gap-8">
+    
+    <!-- Orders Overview -->
+    <div class="bg-white/10 backdrop-blur-md p-6 rounded-2xl shadow-md shadow-black/20">
+      <h2 class="text-xl font-bold text-cyan-300 border-l-4 border-cyan-400 pl-3 mb-4">Orders Overview</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm border-collapse">
+          <thead class="bg-white/10 uppercase text-gray-300 text-xs">
+            <tr>
+              <th class="p-3 text-left">Order</th>
+              <th class="p-3 text-left">From</th>
+              <th class="p-3 text-left">To</th>
+              <th class="p-3 text-left">Dist</th>
+              <th class="p-3 text-left">Status</th>
+              <th class="p-3 text-left">Agent</th>
+              <th class="p-3 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/10">
+            {% for o in orders %}
+            <tr class="hover:bg-white/5 transition">
+              <td class="p-3">{{ o.title }}</td>
+              <td class="p-3">{{ o.pickup }}</td>
+              <td class="p-3">{{ o.dropoff }}</td>
+              <td class="p-3">{{ '%.1f'|format(o.distance_km) }} km</td>
+              <td class="p-3">
+                <span class="px-2 py-1 rounded-md text-xs font-semibold 
+                  {% if o.status == 'pending' %} bg-amber-500/20 text-amber-300 
+                  {% elif o.status == 'assigned' %} bg-cyan-500/20 text-cyan-300 
+                  {% elif o.status == 'delivered' %} bg-emerald-500/20 text-emerald-300 
+                  {% else %} bg-gray-500/20 text-gray-300 {% endif %}">
+                  {{ o.status|capitalize }}
+                </span>
+              </td>
+              <td class="p-3">{{ o.agent.username if o.agent else '-' }}</td>
+              <td class="p-3 flex flex-wrap gap-2">
+                <a class="px-3 py-1 rounded-lg bg-cyan-400 text-slate-900 font-semibold" href="{{ url_for('admin.assign', order_id=o.id) }}">Assign</a>
+                <form method="post" action="{{ url_for('admin.set_status', order_id=o.id) }}">
+                  <input type="hidden" name="status" value="delivered">
+                  <button class="px-3 py-1 rounded-lg bg-emerald-400 text-slate-900 font-semibold hover:opacity-90 transition" {% if o.status=='delivered' %}disabled{% endif %}>Mark Delivered</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Agent Fatigue Overview -->
+    <div class="bg-white/10 backdrop-blur-md p-6 rounded-2xl shadow-md shadow-black/20">
+      <h2 class="text-xl font-bold text-cyan-300 border-l-4 border-cyan-400 pl-3 mb-4">Agent Fatigue Overview</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm border-collapse">
+          <thead class="bg-white/10 uppercase text-gray-300 text-xs">
+            <tr>
+              <th class="p-3 text-left">Agent</th>
+              <th class="p-3 text-left">Fatigue</th>
+              <th class="p-3 text-left">Active Orders</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/10">
+            {% for a in data %}
+            <tr class="hover:bg-white/5 transition">
+              <td class="p-3 font-medium">{{ a.username }}</td>
+              <td class="p-3">
+                <span class="px-2 py-1 rounded-lg text-xs font-semibold 
+                  {% if a.fatigue < 3 %} bg-emerald-500/20 text-emerald-300
+                  {% elif a.fatigue < 6 %} bg-amber-500/20 text-amber-300
+                  {% else %} bg-rose-500/20 text-rose-300 {% endif %}">
+                  {{ a.fatigue }}
+                </span>
+              </td>
+              <td class="p-3">{{ a.assigned }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+{% endblock %}

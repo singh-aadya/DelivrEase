@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="min-h-screen bg-gradient-to-b from-slate-900 to-slate-950 text-white p-8">
+  <div class="max-w-6xl mx-auto">
+
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+      <div>
+        <h1 class="text-3xl font-extrabold tracking-tight">
+          Hello, {{ session.get('username', 'Agent') }} 👋
+        </h1>
+        <p class="text-slate-400 mt-1">Welcome to your delivery dashboard.</p>
+      </div>
+
+      <div class="flex flex-wrap gap-3">
+        <a href="{{ url_for('delivery.leave') }}" class="px-4 py-2 rounded-lg bg-white/10 border border-white/10 hover:bg-white/20 transition">Request Leave</a>
+        <a href="{{ url_for('delivery.history') }}" class="px-4 py-2 rounded-lg bg-cyan-400 text-slate-900 hover:bg-cyan-300 transition font-semibold">History</a>
+        <a href="{{ url_for('auth.logout') }}" class="px-4 py-2 rounded-lg bg-rose-500/80 hover:bg-rose-400 text-white font-semibold transition">Logout</a>
+      </div>
+    </div>
+
+    <!-- Fatigue Card -->
+    <div class="grid md:grid-cols-3 gap-6 mb-10">
+      <div class="col-span-1 bg-gradient-to-br from-cyan-500/10 to-emerald-400/10 p-6 rounded-2xl border border-white/10 shadow-xl">
+        <h2 class="text-lg font-semibold mb-2 text-slate-200">Fatigue Score</h2>
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-5xl font-extrabold text-emerald-400">{{ fatigue }}</p>
+            <p class="text-slate-400 text-sm mt-1">Based on today’s deliveries</p>
+          </div>
+          <div class="w-16 h-16 rounded-full border-4 border-emerald-400/50 flex items-center justify-center text-emerald-300 font-bold">
+            {{ fatigue }}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-span-2 bg-white/5 p-6 rounded-2xl border border-white/10 shadow-md">
+        {% if pending_count > 0 %}
+          <p class="text-amber-300 text-lg font-semibold mb-1">⚠ {{ pending_count }} leave request(s) pending review.</p>
+        {% else %}
+          <p class="text-emerald-300 text-lg font-semibold mb-1">✅ No pending leave requests.</p>
+        {% endif %}
+        <p class="text-slate-400 text-sm">Monitor your fatigue and plan your workload efficiently.</p>
+      </div>
+    </div>
+
+    <!-- Assigned Orders -->
+    <div class="mb-10">
+      <h2 class="text-2xl font-bold mb-3">Your Assigned Orders</h2>
+      <div class="overflow-x-auto rounded-2xl border border-white/10 shadow-lg">
+        <table class="min-w-full divide-y divide-white/10">
+          <thead class="bg-white/10 text-slate-200 uppercase text-sm">
+            <tr>
+              <th class="px-4 py-3 text-left">Order</th>
+              <th class="px-4 py-3 text-left">From</th>
+              <th class="px-4 py-3 text-left">To</th>
+              <th class="px-4 py-3 text-left">Distance</th>
+              <th class="px-4 py-3 text-left">Status</th>
+              <th class="px-4 py-3 text-left">Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/10">
+            {% for o in orders %}
+            <tr class="hover:bg-white/5 transition">
+              <td class="px-4 py-3 font-medium">{{ o.title }}</td>
+              <td class="px-4 py-3">{{ o.pickup }}</td>
+              <td class="px-4 py-3">{{ o.dropoff }}</td>
+              <td class="px-4 py-3">{{ '%.1f'|format(o.distance_km) }} km</td>
+              <td class="px-4 py-3">
+                <span class="px-2 py-1 rounded-lg text-xs 
+                  {% if o.status == 'delivered' %} bg-emerald-500/20 text-emerald-300 border border-emerald-400/30
+                  {% elif o.status == 'assigned' %} bg-cyan-500/20 text-cyan-300 border border-cyan-400/30
+                  {% else %} bg-amber-500/20 text-amber-300 border border-amber-400/30 {% endif %}">
+                  {{ o.status }}
+                </span>
+              </td>
+              <td class="px-4 py-3">
+                {% if o.status != 'delivered' %}
+                <form method="post" action="{{ url_for('delivery.mark_delivered', order_id=o.id) }}">
+                  <button class="px-3 py-1 rounded-lg bg-emerald-400 text-slate-900 font-semibold hover:bg-emerald-300 transition">Mark Delivered</button>
+                </form>
+                {% else %}
+                  <span class="text-slate-500 italic">Completed</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="6" class="px-4 py-6 text-center text-slate-400">No active orders assigned.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Leave History -->
+    <div>
+      <h2 class="text-2xl font-bold mb-3">Leave History</h2>
+      <div class="overflow-x-auto rounded-2xl border border-white/10 shadow-lg">
+        <table class="min-w-full divide-y divide-white/10">
+          <thead class="bg-white/10 text-slate-200 uppercase text-sm">
+            <tr>
+              <th class="px-4 py-3 text-left">From</th>
+              <th class="px-4 py-3 text-left">To</th>
+              <th class="px-4 py-3 text-left">Reason</th>
+              <th class="px-4 py-3 text-left">Status</th>
+              <th class="px-4 py-3 text-left">Requested On</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/10">
+            {% for r in leaves %}
+            <tr class="hover:bg-white/5 transition">
+              <td class="px-4 py-3">{{ r.date_from }}</td>
+              <td class="px-4 py-3">{{ r.date_to }}</td>
+              <td class="px-4 py-3">{{ r.reason or '—' }}</td>
+              <td class="px-4 py-3">
+                <span class="px-2 py-1 rounded-lg text-xs 
+                  {% if r.status=='approved' %} bg-emerald-500/20 text-emerald-300 border border-emerald-400/30
+                  {% elif r.status=='declined' %} bg-rose-500/20 text-rose-300 border border-rose-400/30
+                  {% else %} bg-amber-500/20 text-amber-300 border border-amber-400/30 {% endif %}">
+                  {{ r.status }}
+                </span>
+              </td>
+              <td class="px-4 py-3">{{ r.created_at.date() }}</td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="5" class="px-4 py-6 text-center text-slate-400">No leave requests yet.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}
